@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from sqlalchemy import text
 
 from db.session import engine
-
+from api.auth import router as auth_router
 
 app = FastAPI(
     title="ReStockMX API",
@@ -10,8 +10,9 @@ app = FastAPI(
     version="0.1.0",
 )
 
+app.include_router(auth_router)
 
-@get("/")
+@app.get("/")
 async def root():
     return {
         "message": "ReStockMX API funcionando",
@@ -19,7 +20,7 @@ async def root():
     }
 
 
-@get("/health")
+@app.get("/health")
 async def health_check():
     return {
         "status": "ok",
@@ -27,7 +28,7 @@ async def health_check():
     }
 
 
-@get("/health/database")
+@app.get("/health/database")
 async def database_health():
     with engine.connect() as connection:
         connection.execute(text("SELECT 1"))

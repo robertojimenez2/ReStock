@@ -1,10 +1,13 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from db.base import Base
 from sqlalchemy import DateTime, ForeignKey, Numeric, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Enum as SQLEnum
 from models.enums import NeedStatus
+
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 class Need(Base):
@@ -45,25 +48,25 @@ class Need(Base):
     )
 
     status: Mapped[NeedStatus] = mapped_column(
-    SQLEnum(
-        NeedStatus,
-        native_enum=False,
-        length=30,
-    ),
-    default=NeedStatus.ACTIVE,
-    nullable=False,
-    index=True,
+        SQLEnum(
+            NeedStatus,
+            native_enum=False,
+            length=30,
+        ),
+        default=NeedStatus.ACTIVE,
+        nullable=False,
+        index=True,
     )
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
+        DateTime(timezone=True),
+        default=utc_now,
     )
 
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
+        DateTime(timezone=True),
+        default=utc_now,
+        onupdate=utc_now,
     )
 
     company = relationship(
@@ -80,4 +83,5 @@ class Need(Base):
         "NeedSpecification",
         back_populates="need",
         cascade="all, delete-orphan",
+        passive_deletes=True,
     )

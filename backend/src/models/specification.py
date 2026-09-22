@@ -1,8 +1,12 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from db.base import Base
 from models.enums import SpecificationDataType
 from sqlalchemy import Boolean, DateTime, ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import Enum as SQLEnum
+
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 
@@ -34,7 +38,11 @@ class Specification(Base):
     )
 
     data_type: Mapped[SpecificationDataType] = mapped_column(
-        String(20),
+        SQLEnum(
+            SpecificationDataType,
+            native_enum=False,
+            length=20,
+        ),
         nullable=False,
     )
 
@@ -55,8 +63,8 @@ class Specification(Base):
     )
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
+        DateTime(timezone=True),
+        default=utc_now,
     )
 
     material = relationship(
@@ -66,10 +74,14 @@ class Specification(Base):
 
     surplus_values = relationship(
         "SurplusSpecification",
-        back_populates="specification"
+        back_populates="specification",
+        cascade="all, delete-orphan",
+        passive_deletes=True
     )
 
     need_values = relationship(
         "NeedSpecification",
-        back_populates="specification"
+        back_populates="specification",
+        cascade="all, delete-orphan",
+        passive_deletes=True
     )

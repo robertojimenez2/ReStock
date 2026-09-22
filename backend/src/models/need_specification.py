@@ -1,10 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from db.base import Base
 from sqlalchemy import Boolean, DateTime, ForeignKey, Numeric, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc)
 
 class NeedSpecification(Base):
     __tablename__ = "need_specifications"
@@ -51,8 +52,8 @@ class NeedSpecification(Base):
     )
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
+        DateTime(timezone=True),
+        default=utc_now,
     )
 
     need = relationship(

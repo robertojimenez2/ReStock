@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from db.base import Base
 from sqlalchemy import (
@@ -10,6 +10,9 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Enum as SQLEnum
 from models.enums import SurplusStatus
+
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 class Surplus(Base):
@@ -50,25 +53,25 @@ class Surplus(Base):
     )
 
     status: Mapped[SurplusStatus] = mapped_column(
-    SQLEnum(
-        SurplusStatus,
-        native_enum=False,
-        length=30,
-    ),
-    default=SurplusStatus.AVAILABLE,
-    nullable=False,
-    index=True,
+        SQLEnum(
+            SurplusStatus,
+            native_enum=False,
+            length=30,
+        ),
+        default=SurplusStatus.AVAILABLE,
+        nullable=False,
+        index=True,
     )
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
+        DateTime(timezone=True),
+        default=utc_now,
     )
 
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
+        DateTime(timezone=True),
+        default=utc_now,
+        onupdate=utc_now,
     )
 
     company = relationship(

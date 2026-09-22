@@ -1,10 +1,13 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import String, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Enum as SQLEnum
 from models.enums import UserRole
 from db.base import Base
+
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 class User(Base):
@@ -30,13 +33,13 @@ class User(Base):
     )
 
     role: Mapped[UserRole] = mapped_column(
-    SQLEnum(
-        UserRole,
-        native_enum=False,
-        length=30,
-    ),
-    default=UserRole.COMPANY_USER,
-    nullable=False,
+        SQLEnum(
+            UserRole,
+            native_enum=False,
+            length=30,
+        ),
+        default=UserRole.COMPANY_USER,
+        nullable=False,
     )
 
     is_active: Mapped[bool] = mapped_column(
@@ -46,8 +49,8 @@ class User(Base):
     )
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
+        DateTime(timezone=True),
+        default=utc_now,
     )
 
     company_id: Mapped[int] = mapped_column(
