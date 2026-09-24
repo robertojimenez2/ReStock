@@ -8,6 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field
 class TransactionStatusUpdate(BaseModel):
     status: TransactionStatus
     notes: str | None = Field(default=None, max_length=1000)
+    model_config = ConfigDict(extra="forbid")
 
 
 class TransactionResponse(BaseModel):

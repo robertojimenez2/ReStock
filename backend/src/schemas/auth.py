@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from schemas.company import CompanyCreate
 from schemas.user import UserCreate
 
@@ -19,6 +19,8 @@ class RegisterUserData(BaseModel):
 class RegisterRequest(BaseModel):
     company: CompanyCreate
     user: RegisterUserData
+    model_config= ConfigDict(extra="forbid")
+
 
 class LoginRequest(BaseModel):
     email: EmailStr

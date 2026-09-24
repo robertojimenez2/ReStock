@@ -15,6 +15,7 @@ class NeedSpecificationBase(BaseModel):
 class NeedSpecificationCreate(NeedSpecificationBase):
     need_id: int
     specification_id: int
+    model_config = ConfigDict(extra="forbid")
 
 
 class NeedSpecificationResponse(NeedSpecificationBase):

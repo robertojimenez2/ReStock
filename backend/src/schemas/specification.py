@@ -14,6 +14,7 @@ class SpecificationBase(BaseModel):
 
 class SpecificationCreate(SpecificationBase):
     """El material_id viene del path, no del body."""
+    model_config = ConfigDict(extra="forbid")
 
 
 class SpecificationUpdate(BaseModel):
@@ -22,6 +23,7 @@ class SpecificationUpdate(BaseModel):
     unit: str | None = Field(default=None, max_length=50)
     description: str | None = Field(default=None, max_length=300)
     is_required: bool | None = None
+    model_config = ConfigDict(extra="forbid")
 
 
 class SpecificationResponse(SpecificationBase):

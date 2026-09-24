@@ -1,6 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
-
+from pydantic import ConfigDict
 from models.enums import SurplusStatus
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -29,6 +29,8 @@ class SurplusCreate(SurplusBase):
     material_id: int
     specifications: list[SurplusSpecificationInput] = Field(default_factory=list)
 
+    model_config= ConfigDict(extra="forbid")
+
 
 class SurplusUpdate(BaseModel):
     quantity: Decimal | None = Field(default=None, gt=0)
@@ -40,6 +42,8 @@ class SurplusUpdate(BaseModel):
 
 class SurplusStatusUpdate(BaseModel):
     status: SurplusStatus
+    model_config= ConfigDict(extra="forbid")
+
 
 
 class SurplusSpecificationResponse(BaseModel):

@@ -10,6 +10,7 @@ class OfferCreate(BaseModel):
     quantity: Decimal = Field(gt=0)
     unit_price: Decimal = Field(ge=0)
     message: str | None = Field(default=None, max_length=500)
+    model_config = ConfigDict(extra="forbid")
 
 
 class OfferCounter(BaseModel):

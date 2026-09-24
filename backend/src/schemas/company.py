@@ -41,6 +41,8 @@ class CompanyBase(BaseModel):
 
 
 class CompanyCreate(CompanyBase):
+    model_config= ConfigDict(extra="forbid")
+
     pass
 
 
@@ -83,6 +85,9 @@ class CompanyUpdate(BaseModel):
         default=None,
         max_length=250,
     )
+
+    model_config= ConfigDict(extra="forbid")
+
 
 
 class CompanyResponse(CompanyBase):

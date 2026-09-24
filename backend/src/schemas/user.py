@@ -20,6 +20,7 @@ class UserCreate(UserBase):
     )
 
     company_id: int
+    model_config = ConfigDict(extra="forbid")
 
 
 class UserUpdate(BaseModel):
@@ -30,6 +31,7 @@ class UserUpdate(BaseModel):
     )
 
     email: EmailStr | None = None
+    model_config = ConfigDict(extra="forbid")
 
 
 class UserResponse(UserBase):

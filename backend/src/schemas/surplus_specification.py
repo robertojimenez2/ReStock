@@ -18,6 +18,7 @@ class SurplusSpecificationBase(BaseModel):
 class SurplusSpecificationCreate(SurplusSpecificationBase):
     surplus_id: int
     specification_id: int
+    model_config = ConfigDict(extra="forbid")
 
 
 class SurplusSpecificationResponse(

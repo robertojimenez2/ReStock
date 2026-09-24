@@ -54,6 +54,7 @@ class NeedBase(BaseModel):
 class NeedCreate(NeedBase):
     material_id: int
     specifications: list[NeedSpecificationInput] = Field(default_factory=list)
+    model_config = ConfigDict(extra="forbid")
 
 
 class NeedUpdate(BaseModel):
@@ -62,6 +63,7 @@ class NeedUpdate(BaseModel):
     max_price: Decimal | None = Field(default=None, ge=0)
     description: str | None = Field(default=None, max_length=1000)
     specifications: list[NeedSpecificationInput] | None = None
+    model_config = ConfigDict(extra="forbid")
 
 
 class NeedStatusUpdate(BaseModel):
