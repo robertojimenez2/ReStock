@@ -6,6 +6,7 @@ from api.auth import router as auth_router
 from api.materials import router as materials_router
 from api.surpluses import router as surpluses_router
 from api.specifications import router as specifications_router
+from api.needs import router as needs_router
 import db.metadata
 
 app = FastAPI(
@@ -18,6 +19,7 @@ app.include_router(auth_router)
 app.include_router(materials_router)
 app.include_router(surpluses_router)
 app.include_router(specifications_router)
+app.include_router(needs_router)
 
 @app.get("/")
 async def root():

@@ -110,3 +110,8 @@ class MaterialNotEditableError(AppError):
         super().__init__(
             "Solo puedes modificar especificaciones de materiales pendientes propuestos por tu empresa"
         )
+
+class NeedNotFoundError(AppError):
+    def __init__(self, need_id: int | None = None) -> None:
+        self.need_id = need_id
+        super().__init__("Necesidad no encontrada")
