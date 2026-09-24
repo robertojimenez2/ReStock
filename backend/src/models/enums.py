@@ -30,3 +30,19 @@ class MaterialStatus(str, Enum):
     ACTIVE = "active"
     PENDING = "pending"
     REJECTED = "rejected"
+    
+
+class OfferStatus(str, Enum):
+    PENDING = "pending"
+    ACCEPTED = "accepted"
+    REJECTED = "rejected"
+    COUNTERED = "countered"
+    CANCELLED = "cancelled"
+    EXPIRED = "expired"
+
+
+class TransactionStatus(str, Enum):
+    PENDING = "pending"
+    IN_TRANSIT = "in_transit"
+    COMPLETED = "completed"
+    CANCELLED = "cancelled"

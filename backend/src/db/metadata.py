@@ -7,3 +7,5 @@ from models.need import Need
 from models.specification import Specification
 from models.surplus_specification import SurplusSpecification
 from models.need_specification import NeedSpecification
+from models.offer import Offer
+from models.transaction import Transaction

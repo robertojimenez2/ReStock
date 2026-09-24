@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 
 from db.base import Base
+from models.offer import Offer
 from sqlalchemy import (
     DateTime,
     ForeignKey,
@@ -90,3 +91,10 @@ class Surplus(Base):
         cascade="all, delete-orphan",
         passive_deletes=True,
     )   
+
+    offers: Mapped[list["Offer"]] = relationship(
+        "Offer",
+        back_populates="surplus",
+        cascade="all, delete-orphan",
+        passive_deletes=True,   # ← añadir
+    )

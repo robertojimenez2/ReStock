@@ -111,7 +111,42 @@ class MaterialNotEditableError(AppError):
             "Solo puedes modificar especificaciones de materiales pendientes propuestos por tu empresa"
         )
 
+
 class NeedNotFoundError(AppError):
     def __init__(self, need_id: int | None = None) -> None:
         self.need_id = need_id
         super().__init__("Necesidad no encontrada")
+
+
+class OfferNotFoundError(AppError):
+    def __init__(self, offer_id: int | None = None) -> None:
+        self.offer_id = offer_id
+        super().__init__("Oferta no encontrada")
+
+
+class TransactionNotFoundError(AppError):
+    def __init__(self, transaction_id: int | None = None) -> None:
+        self.transaction_id = transaction_id
+        super().__init__("Transacción no encontrada")
+
+
+class OfferNotActionableError(AppError):
+    def __init__(self, reason: str) -> None:
+        super().__init__(reason)
+
+
+class SurplusNotAvailableError(AppError):
+    def __init__(self, surplus_id: int) -> None:
+        self.surplus_id = surplus_id
+        super().__init__(
+            "El excedente no está disponible para nuevas ofertas"
+        )
+
+
+class InvalidTransactionTransitionError(AppError):
+    def __init__(self, current: str, target: str) -> None:
+        self.current = current
+        self.target = target
+        super().__init__(
+            f"No se puede pasar de '{current}' a '{target}'"
+        )
