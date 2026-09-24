@@ -10,6 +10,7 @@ from api.needs import router as needs_router
 from api.matches import router as matches_router
 from api.offers import router as offers_router
 from api.transactions import router as transactions_router
+from api.dashboard import router as dashboard_router
 import db.metadata
 
 app = FastAPI(
@@ -26,6 +27,7 @@ app.include_router(needs_router)
 app.include_router(matches_router)
 app.include_router(offers_router)
 app.include_router(transactions_router)
+app.include_router(dashboard_router)
 
 @app.get("/")
 async def root():

@@ -4,3 +4,4 @@ from repositories import specifications_repository
 from repositories import need_repository
 from repositories import offer_repository
 from repositories import transaction_repository
+from repositories import dashboard_repository

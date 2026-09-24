@@ -6,3 +6,4 @@ from services import need_service
 from services import matching_service
 from services import offer_service
 from services import transaction_service
+from services import dashboard_service
