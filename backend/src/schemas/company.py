@@ -51,9 +51,9 @@ class CompanyUpdate(BaseModel):
         max_length=150,
     )
 
-    legal_name: str | None = Field(
+    legal_name: str  = Field(
         default=None,
-        max_length=200,
+        max_length=150,
     )
 
     industry: str | None = Field(
@@ -64,7 +64,7 @@ class CompanyUpdate(BaseModel):
 
     description: str | None = Field(
         default=None,
-        max_length=500,
+        max_length=250,
     )
 
     city: str | None = Field(

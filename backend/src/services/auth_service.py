@@ -1,20 +1,21 @@
+from functools import lru_cache
+
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from core.exceptions import EmailAlreadyRegisteredError
-from core.security import hash_password, verify_password, create_access_token
+from core.security import create_access_token, hash_password, verify_password
 from models.company import Company
 from models.enums import UserRole
 from models.user import User
 from schemas.auth import RegisterRequest
 
+
 def register_user(db: Session, data: RegisterRequest) -> User:
     email = data.user.email.lower().strip()
 
-    existing_user = db.scalar(
-        select(User).where(User.email == email)
-    )
+    existing_user = db.scalar(select(User).where(User.email == email))
     if existing_user:
         raise EmailAlreadyRegisteredError()
 
@@ -37,7 +38,7 @@ def register_user(db: Session, data: RegisterRequest) -> User:
 
     try:
         db.add(company)
-        db.flush()  # para obtener company.id
+        db.flush()  # asigna company.id
 
         user.company_id = company.id
         db.add(user)
@@ -46,8 +47,11 @@ def register_user(db: Session, data: RegisterRequest) -> User:
         db.refresh(user)
     except IntegrityError as exc:
         db.rollback()
-        # Aquí decides según el constraint violado
-        raise EmailAlreadyRegisteredError() from exc
+        message = str(exc.orig).lower()
+        if "email" in message or "users_email" in message:
+            raise EmailAlreadyRegisteredError() from exc
+        # Otro constraint falló: no enmascarar como duplicado de email.
+        raise
     except Exception:
         db.rollback()
         raise
@@ -55,7 +59,10 @@ def register_user(db: Session, data: RegisterRequest) -> User:
     return user
 
 
-_DUMMY_HASH = hash_password("timing_attack_mitigation")
+@lru_cache(maxsize=1)
+def _get_dummy_hash() -> str:
+    """Hash dummy para mitigar timing attacks en usuarios inexistentes."""
+    return hash_password("timing_attack_mitigation")
 
 
 def authenticate_user(
@@ -65,12 +72,10 @@ def authenticate_user(
 ) -> User | None:
     email = email.lower().strip()
 
-    user = db.scalar(
-        select(User).where(User.email == email)
-    )
+    user = db.scalar(select(User).where(User.email == email))
 
     if user is None:
-        verify_password(password, _DUMMY_HASH)
+        verify_password(password, _get_dummy_hash())
         return None
 
     if not verify_password(password, user.password_hash):
@@ -81,8 +86,7 @@ def authenticate_user(
 
     return user
 
+
 def create_user_token(user: User) -> str:
-    return create_access_token(
-        user_id=user.id,
-        role=user.role.value,
-    )
+    role_value = user.role.value if isinstance(user.role, UserRole) else user.role
+    return create_access_token(user_id=user.id, role=role_value)

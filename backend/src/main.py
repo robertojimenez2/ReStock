@@ -3,6 +3,7 @@ from sqlalchemy import text
 
 from db.session import engine
 from api.auth import router as auth_router
+import db.metadata
 
 app = FastAPI(
     title="ReStockMX API",

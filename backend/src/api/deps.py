@@ -1,13 +1,13 @@
 from typing import Annotated
 
-import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
 from sqlalchemy.orm import Session
 
-from core.config import settings
+from core.security import decode_access_token
 from db.dependencies import get_db
+from models.enums import UserRole
 from models.user import User
 
 
@@ -25,15 +25,8 @@ def get_current_user(
     db: Annotated[Session, Depends(get_db)],
 ) -> User:
     try:
-        payload = jwt.decode(
-            token,
-            settings.secret_key,
-            algorithms=[settings.algorithm],
-        )
+        payload = decode_access_token(token)
     except InvalidTokenError:
-        raise credentials_exception
-
-    if payload.get("type") != "access":
         raise credentials_exception
 
     sub = payload.get("sub")
@@ -61,3 +54,35 @@ def get_current_active_user(
             detail="El usuario está desactivado",
         )
     return user
+
+
+def require_roles(*roles: UserRole):
+    """Factory: devuelve una dependencia que exige uno de los roles dados."""
+    allowed = set(roles)
+
+    def dependency(
+        current_user: Annotated[User, Depends(get_current_active_user)],
+    ) -> User:
+        if current_user.role not in allowed:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="No tienes permisos para realizar esta acción",
+            )
+        return current_user
+
+    return dependency
+
+
+
+require_company_user = require_roles(
+    UserRole.COMPANY_USER,
+    UserRole.COMPANY_ADMIN,
+    UserRole.PLATFORM_ADMIN,
+)
+
+require_company_admin = require_roles(
+    UserRole.COMPANY_ADMIN,
+    UserRole.PLATFORM_ADMIN,
+)
+
+require_platform_admin = require_roles(UserRole.PLATFORM_ADMIN)
