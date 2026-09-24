@@ -10,8 +10,6 @@ from core.exceptions import (
     MaterialNotFoundError,
     NeedNotFoundError,
     PermissionDeniedError,
-    SpecificationNotBelongToMaterialError,
-    SpecificationNotFoundError,
 )
 from models.enums import (
     MaterialStatus,
@@ -19,7 +17,6 @@ from models.enums import (
     SpecificationDataType,
     UserRole,
 )
-from models.material import Material
 from models.need import Need
 from models.need_specification import NeedSpecification
 from models.specification import Specification
@@ -30,6 +27,8 @@ from schemas.need import (
     NeedSpecificationInput,
     NeedUpdate,
 )
+from services import _spec_validation
+
 
 
 _ALLOWED_TRANSITIONS: dict[NeedStatus, set[NeedStatus]] = {
@@ -77,31 +76,15 @@ def _validate_and_build_specs(
     o rango corresponda al data_type. Verifica también que estén las
     requeridas."""
 
-    # 1. Duplicados
-    seen: set[int] = set()
-    for inp in inputs:
-        if inp.specification_id in seen:
-            raise InvalidSpecificationValueError(
-                f"Especificación {inp.specification_id} duplicada"
-            )
-        seen.add(inp.specification_id)
-
-    specs_by_id = _load_specs_by_ids(db, seen)
+    specs_by_id = _spec_validation.resolve_specs(
+        db, material_id, inputs,
+    )
 
     result: list[NeedSpecification] = []
 
     for inp in inputs:
-        spec = specs_by_id.get(inp.specification_id)
-        if spec is None:
-            raise SpecificationNotFoundError(inp.specification_id)
-
-        if spec.material_id != material_id:
-            raise SpecificationNotBelongToMaterialError(
-                inp.specification_id, material_id,
-            )
-
+        spec = specs_by_id[inp.specification_id]
         _validate_value_for_spec(inp, spec)
-
         result.append(
             NeedSpecification(
                 specification_id=spec.id,
@@ -113,20 +96,9 @@ def _validate_and_build_specs(
             )
         )
 
-    # 2. Requeridas
-    required = db.scalars(
-        select(Specification).where(
-            Specification.material_id == material_id,
-            Specification.is_required.is_(True),
-        )
-    ).all()
-
-    missing = [s for s in required if s.id not in seen]
-    if missing:
-        names = ", ".join(s.name for s in missing)
-        raise InvalidSpecificationValueError(
-            f"Faltan especificaciones requeridas: {names}"
-        )
+    _spec_validation.assert_required_specs_present(
+        db, material_id, {inp.specification_id for inp in inputs},
+    )
 
     return result
 

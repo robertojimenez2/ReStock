@@ -7,8 +7,6 @@ from core.exceptions import (
     MaterialNotAvailableError,
     MaterialNotFoundError,
     PermissionDeniedError,
-    SpecificationNotBelongToMaterialError,
-    SpecificationNotFoundError,
     SurplusNotFoundError,
 )
 from models.enums import (
@@ -17,7 +15,6 @@ from models.enums import (
     SurplusStatus,
     UserRole,
 )
-from models.material import Material
 from models.specification import Specification
 from models.surplus import Surplus
 from models.surplus_specification import SurplusSpecification
@@ -28,6 +25,7 @@ from schemas.surplus import (
     SurplusSpecificationInput,
     SurplusUpdate,
 )
+from services import _spec_validation
 
 
 # Transiciones de status permitidas por el dueño
@@ -62,68 +60,19 @@ def _validate_and_build_specs(
     material_id: int,
     inputs: list[SurplusSpecificationInput],
 ) -> list[SurplusSpecification]:
-    """Valida que cada spec exista, pertenezca al material y su valor
+    """Valida que cada spec exista, pertenezca al material, y su valor
     corresponda al data_type. También verifica que estén presentes
-    las specs requeridas del material."""
+    las specs requeridas."""
 
-    # Detectar duplicados
-    seen: set[int] = set()
-    for inp in inputs:
-        if inp.specification_id in seen:
-            raise InvalidSpecificationValueError(
-                f"Especificación {inp.specification_id} duplicada"
-            )
-        seen.add(inp.specification_id)
-
-    # Cargar specs referenciadas
-    specs_by_id: dict[int, Specification] = {}
-    if seen:
-        rows = db.scalars(
-            select(Specification).where(Specification.id.in_(seen))
-        ).all()
-        specs_by_id = {s.id: s for s in rows}
+    specs_by_id = _spec_validation.resolve_specs(
+        db, material_id, inputs,
+    )
 
     result: list[SurplusSpecification] = []
 
     for inp in inputs:
-        spec = specs_by_id.get(inp.specification_id)
-        if spec is None:
-            raise SpecificationNotFoundError(inp.specification_id)
-
-        if spec.material_id != material_id:
-            raise SpecificationNotBelongToMaterialError(
-                inp.specification_id, material_id,
-            )
-
-        # Validar que solo el campo correcto tenga valor
-        if spec.data_type == SpecificationDataType.NUMBER:
-            if inp.value_number is None:
-                raise InvalidSpecificationValueError(
-                    f"'{spec.name}' requiere value_number"
-                )
-            if inp.value_text is not None or inp.value_boolean is not None:
-                raise InvalidSpecificationValueError(
-                    f"'{spec.name}' solo acepta value_number"
-                )
-        elif spec.data_type == SpecificationDataType.TEXT:
-            if inp.value_text is None:
-                raise InvalidSpecificationValueError(
-                    f"'{spec.name}' requiere value_text"
-                )
-            if inp.value_number is not None or inp.value_boolean is not None:
-                raise InvalidSpecificationValueError(
-                    f"'{spec.name}' solo acepta value_text"
-                )
-        elif spec.data_type == SpecificationDataType.BOOLEAN:
-            if inp.value_boolean is None:
-                raise InvalidSpecificationValueError(
-                    f"'{spec.name}' requiere value_boolean"
-                )
-            if inp.value_number is not None or inp.value_text is not None:
-                raise InvalidSpecificationValueError(
-                    f"'{spec.name}' solo acepta value_boolean"
-                )
-
+        spec = specs_by_id[inp.specification_id]
+        _validate_value_for_spec(inp, spec)
         result.append(
             SurplusSpecification(
                 specification_id=spec.id,
@@ -133,22 +82,49 @@ def _validate_and_build_specs(
             )
         )
 
-    # Verificar requeridas
-    required = db.scalars(
-        select(Specification).where(
-            Specification.material_id == material_id,
-            Specification.is_required.is_(True),
-        )
-    ).all()
-
-    missing = [s for s in required if s.id not in seen]
-    if missing:
-        names = ", ".join(s.name for s in missing)
-        raise InvalidSpecificationValueError(
-            f"Faltan especificaciones requeridas: {names}"
-        )
+    _spec_validation.assert_required_specs_present(
+        db, material_id, {inp.specification_id for inp in inputs},
+    )
 
     return result
+
+
+def _validate_value_for_spec(
+    inp: SurplusSpecificationInput,
+    spec: Specification,
+) -> None:
+    """Valida que el input tenga exactamente el campo correcto según
+    el data_type de la spec. Surplus solo admite un valor exacto."""
+
+    if spec.data_type == SpecificationDataType.NUMBER:
+        if inp.value_number is None:
+            raise InvalidSpecificationValueError(
+                f"'{spec.name}' requiere value_number"
+            )
+        if inp.value_text is not None or inp.value_boolean is not None:
+            raise InvalidSpecificationValueError(
+                f"'{spec.name}' solo acepta value_number"
+            )
+
+    elif spec.data_type == SpecificationDataType.TEXT:
+        if inp.value_text is None:
+            raise InvalidSpecificationValueError(
+                f"'{spec.name}' requiere value_text"
+            )
+        if inp.value_number is not None or inp.value_boolean is not None:
+            raise InvalidSpecificationValueError(
+                f"'{spec.name}' solo acepta value_text"
+            )
+
+    elif spec.data_type == SpecificationDataType.BOOLEAN:
+        if inp.value_boolean is None:
+            raise InvalidSpecificationValueError(
+                f"'{spec.name}' requiere value_boolean"
+            )
+        if inp.value_number is not None or inp.value_text is not None:
+            raise InvalidSpecificationValueError(
+                f"'{spec.name}' solo acepta value_boolean"
+            )
 
 
 def create_surplus(
