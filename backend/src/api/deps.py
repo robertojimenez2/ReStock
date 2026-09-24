@@ -11,7 +11,6 @@ from db.dependencies import get_db
 from models.enums import UserRole
 from models.user import User
 
-
 # auto_error=False: no lanza 401 si no hay header, permite fallback a cookie
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/auth/login",

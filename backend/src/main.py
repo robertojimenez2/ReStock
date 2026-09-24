@@ -1,6 +1,7 @@
 from fastapi import FastAPI
-from sqlalchemy import text
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
+
 from api.auth import router as auth_router
 from api.dashboard import router as dashboard_router
 from api.matches import router as matches_router

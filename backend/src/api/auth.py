@@ -17,7 +17,6 @@ from services.auth_service import (
     register_user,
 )
 
-
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
