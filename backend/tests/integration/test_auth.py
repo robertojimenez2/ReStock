@@ -132,3 +132,49 @@ class TestMe:
 
         r = client.get("/auth/me", headers=headers)
         assert r.status_code == 403
+
+
+@pytest.mark.integration
+class TestSessionCookie:
+    def test_login_sets_httponly_cookie(self, client, register_and_login):
+        register_and_login(email="cookie@test.mx", password="test12345")
+
+        r = client.post(
+            "/auth/login",
+            data={"username": "cookie@test.mx", "password": "test12345"},
+        )
+        assert r.status_code == 200
+
+        # httpx guarda las cookies del TestClient
+        assert "restock_session" in r.cookies
+        cookie = r.cookies["restock_session"]
+        assert len(cookie) > 20  # JWT real
+
+    def test_me_works_with_cookie_only(self, client, register_and_login):
+        register_and_login(email="cookie2@test.mx", password="test12345")
+
+        # Login guarda la cookie en el cliente
+        client.post(
+            "/auth/login",
+            data={"username": "cookie2@test.mx", "password": "test12345"},
+        )
+
+        # Sin Authorization header, solo cookie
+        r = client.get("/auth/me")
+        assert r.status_code == 200
+        assert r.json()["email"] == "cookie2@test.mx"
+
+    def test_logout_clears_cookie(self, client, register_and_login):
+        register_and_login(email="cookie3@test.mx", password="test12345")
+
+        client.post(
+            "/auth/login",
+            data={"username": "cookie3@test.mx", "password": "test12345"},
+        )
+
+        r = client.post("/auth/logout")
+        assert r.status_code == 204
+
+        # Después del logout, /auth/me falla
+        r = client.get("/auth/me")
+        assert r.status_code == 401
