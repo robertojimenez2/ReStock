@@ -1,20 +1,21 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
-from db.base import Base
-from models.enums import MaterialStatus
 from sqlalchemy import DateTime, ForeignKey, String
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from db.base import Base
+from models.enums import MaterialStatus
+
 if TYPE_CHECKING:
-    from models.surplus import Surplus
     from models.need import Need
     from models.specification import Specification
+    from models.surplus import Surplus
 
 
 def utc_now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 class Material(Base):

@@ -10,7 +10,6 @@ from db.dependencies import get_db
 from models.enums import UserRole
 from models.user import User
 
-
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 credentials_exception = HTTPException(
@@ -27,7 +26,7 @@ def get_current_user(
     try:
         payload = decode_access_token(token)
     except InvalidTokenError:
-        raise credentials_exception
+        raise credentials_exception from None
 
     sub = payload.get("sub")
     if not sub:
@@ -36,7 +35,7 @@ def get_current_user(
     try:
         user_id = int(sub)
     except (ValueError, TypeError):
-        raise credentials_exception
+        raise credentials_exception from None
 
     user = db.get(User, user_id)
     if user is None:

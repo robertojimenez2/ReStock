@@ -5,8 +5,8 @@ from sqlalchemy.orm import Session
 
 from api.deps import get_current_active_user, require_company_user
 from core.exceptions import (
-    OfferNotFoundError,
     OfferNotActionableError,
+    OfferNotFoundError,
     PermissionDeniedError,
     SurplusNotAvailableError,
     SurplusNotFoundError,
@@ -17,7 +17,6 @@ from models.user import User
 from schemas.offer import OfferCounter, OfferCreate, OfferResponse
 from schemas.transaction import TransactionResponse
 from services import offer_service
-
 
 router = APIRouter(prefix="/offers", tags=["offers"])
 

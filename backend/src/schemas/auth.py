@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
+
 from schemas.company import CompanyCreate
-from schemas.user import UserCreate
+
 
 class RegisterUserData(BaseModel):
     email: EmailStr

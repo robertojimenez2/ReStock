@@ -21,7 +21,6 @@ from models.surplus import Surplus
 from models.surplus_specification import SurplusSpecification
 from models.user import User
 
-
 # Pesos por dimensión (README)
 W_MATERIAL = 0.40
 W_QUANTITY = 0.20
@@ -107,10 +106,7 @@ def _compare_number(
 
     if need_min is not None and sv < float(need_min):
         return False
-    if need_max is not None and sv > float(need_max):
-        return False
-
-    return True
+    return need_max is None or sv <= float(need_max)
 
 
 def _specs_score(

@@ -1,8 +1,9 @@
 from datetime import datetime
 from decimal import Decimal
-from pydantic import ConfigDict
-from models.enums import SurplusStatus
+
 from pydantic import BaseModel, ConfigDict, Field
+
+from models.enums import SurplusStatus
 
 
 class SurplusSpecificationInput(BaseModel):

@@ -1,7 +1,8 @@
 from datetime import datetime
 
-from models.enums import SpecificationDataType
 from pydantic import BaseModel, ConfigDict, Field
+
+from models.enums import SpecificationDataType
 
 
 class SpecificationBase(BaseModel):

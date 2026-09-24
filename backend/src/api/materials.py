@@ -23,7 +23,6 @@ from schemas.material import (
 )
 from services import material_services
 
-
 router = APIRouter(prefix="/materials", tags=["materials"])
 
 
@@ -52,7 +51,7 @@ def create_material(
     """platform_admin crea ACTIVE directo; company_admin propone (PENDING)."""
     try:
         return material_services.create_material(db, data, current_user)
-    except (MaterialAlreadyExistsError,) as error:
+    except MaterialAlreadyExistsError as error:
         raise _handle_domain_errors(error) from error
 
 

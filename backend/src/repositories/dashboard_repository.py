@@ -12,7 +12,6 @@ from models.offer import Offer
 from models.surplus import Surplus
 from models.transaction import Transaction
 
-
 # ── Surpluses 
 
 def count_surpluses_by_status(

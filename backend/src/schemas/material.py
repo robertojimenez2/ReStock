@@ -1,7 +1,8 @@
 from datetime import datetime
 
-from models.enums import MaterialStatus
 from pydantic import BaseModel, ConfigDict, Field
+
+from models.enums import MaterialStatus
 
 
 class MaterialBase(BaseModel):

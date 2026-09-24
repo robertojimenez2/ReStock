@@ -1,19 +1,21 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from db.base import Base
-from models.offer import Offer
 from sqlalchemy import (
     DateTime,
     ForeignKey,
     Numeric,
     String,
 )
-from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Enum as SQLEnum
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from db.base import Base
 from models.enums import SurplusStatus
+from models.offer import Offer
+
 
 def utc_now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 class Surplus(Base):

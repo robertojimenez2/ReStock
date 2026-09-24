@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy.orm import Session
 
@@ -37,7 +37,7 @@ _ALLOWED: dict[TransactionStatus, set[TransactionStatus]] = {
 
 
 def _utc_now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def _assert_participant(tx: Transaction, current_user: User) -> None:

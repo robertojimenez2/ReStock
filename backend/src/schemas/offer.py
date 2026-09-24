@@ -1,8 +1,9 @@
 from datetime import datetime
 from decimal import Decimal
 
-from models.enums import OfferStatus
 from pydantic import BaseModel, ConfigDict, Field
+
+from models.enums import OfferStatus
 
 
 class OfferCreate(BaseModel):

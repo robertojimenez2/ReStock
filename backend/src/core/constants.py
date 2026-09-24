@@ -1,6 +1,5 @@
 from typing import Final
 
-
 # ── Logística 
 # Costos estimados en MXN. Ajustables según feedback operativo. Buscarlos depues
 LOGISTICS_BASE_PICKUP_MXN: Final = 500.0

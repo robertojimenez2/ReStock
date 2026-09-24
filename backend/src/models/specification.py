@@ -1,12 +1,15 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+
+from sqlalchemy import Boolean, DateTime, ForeignKey, String, UniqueConstraint
+from sqlalchemy import Enum as SQLEnum
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from db.base import Base
 from models.enums import SpecificationDataType
-from sqlalchemy import Boolean, DateTime, ForeignKey, String, UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import Enum as SQLEnum
+
 
 def utc_now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 

@@ -1,19 +1,18 @@
 from fastapi import FastAPI
 from sqlalchemy import text
 
-from db.session import engine
 from api.auth import router as auth_router
-from api.materials import router as materials_router
-from api.surpluses import router as surpluses_router
-from api.specifications import router as specifications_router
-from api.needs import router as needs_router
-from api.matches import router as matches_router
-from api.offers import router as offers_router
-from api.transactions import router as transactions_router
 from api.dashboard import router as dashboard_router
-from api.valuation import router as valuation_router
+from api.matches import router as matches_router
+from api.materials import router as materials_router
+from api.needs import router as needs_router
 from api.notifications import router as notifications_router
-import db.metadata
+from api.offers import router as offers_router
+from api.specifications import router as specifications_router
+from api.surpluses import router as surpluses_router
+from api.transactions import router as transactions_router
+from api.valuation import router as valuation_router
+from db.session import engine
 
 app = FastAPI(
     title="ReStockMX API",

@@ -25,7 +25,6 @@ from schemas.need import (
 )
 from services import need_service
 
-
 router = APIRouter(prefix="/needs", tags=["needs"])
 
 

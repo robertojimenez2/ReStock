@@ -14,7 +14,6 @@ from schemas.notification import (
 )
 from services import notification_service
 
-
 router = APIRouter(prefix="/notifications", tags=["notifications"])
 
 

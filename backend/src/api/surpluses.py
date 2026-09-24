@@ -25,7 +25,6 @@ from schemas.surplus import (
 )
 from services import surplus_service
 
-
 router = APIRouter(prefix="/surpluses", tags=["surpluses"])
 
 

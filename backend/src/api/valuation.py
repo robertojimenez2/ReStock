@@ -14,7 +14,6 @@ from models.user import User
 from schemas.valuation import ValuationResponse
 from services import valuation_service
 
-
 router = APIRouter(prefix="/valuation", tags=["valuation"])
 
 

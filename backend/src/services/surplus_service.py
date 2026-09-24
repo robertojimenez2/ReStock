@@ -1,4 +1,3 @@
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from core.exceptions import (
@@ -26,7 +25,6 @@ from schemas.surplus import (
     SurplusUpdate,
 )
 from services import _spec_validation
-
 
 # Transiciones de status permitidas por el dueño
 _ALLOWED_TRANSITIONS: dict[SurplusStatus, set[SurplusStatus]] = {

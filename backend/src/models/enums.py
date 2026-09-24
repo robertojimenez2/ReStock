@@ -1,38 +1,38 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class SpecificationDataType(str, Enum):
+class SpecificationDataType(StrEnum):
     NUMBER = "number"
     TEXT = "text"
     BOOLEAN = "boolean"
 
 
-class UserRole(str, Enum):
+class UserRole(StrEnum):
     COMPANY_USER = "company_user"
     COMPANY_ADMIN = "company_admin"
     PLATFORM_ADMIN = "platform_admin"
 
 
-class SurplusStatus(str, Enum):
+class SurplusStatus(StrEnum):
     AVAILABLE = "available"
     RESERVED = "reserved"
     SOLD = "sold"
     INACTIVE = "inactive"
 
 
-class NeedStatus(str, Enum):
+class NeedStatus(StrEnum):
     ACTIVE = "active"
     FULFILLED = "fulfilled"
     INACTIVE = "inactive"
 
 
-class MaterialStatus(str, Enum):
+class MaterialStatus(StrEnum):
     ACTIVE = "active"
     PENDING = "pending"
     REJECTED = "rejected"
-    
 
-class OfferStatus(str, Enum):
+
+class OfferStatus(StrEnum):
     PENDING = "pending"
     ACCEPTED = "accepted"
     REJECTED = "rejected"
@@ -41,14 +41,14 @@ class OfferStatus(str, Enum):
     EXPIRED = "expired"
 
 
-class TransactionStatus(str, Enum):
+class TransactionStatus(StrEnum):
     PENDING = "pending"
     IN_TRANSIT = "in_transit"
     COMPLETED = "completed"
     CANCELLED = "cancelled"
 
 
-class NotificationType(str, Enum):
+class NotificationType(StrEnum):
     OFFER_RECEIVED = "offer_received"
     OFFER_ACCEPTED = "offer_accepted"
     OFFER_REJECTED = "offer_rejected"

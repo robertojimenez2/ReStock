@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import DateTime, ForeignKey, Numeric, String
 from sqlalchemy import Enum as SQLEnum
@@ -9,7 +9,7 @@ from models.enums import OfferStatus
 
 
 def utc_now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 class Offer(Base):

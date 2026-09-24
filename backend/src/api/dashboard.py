@@ -9,7 +9,6 @@ from models.user import User
 from schemas.dashboard import DashboardResponse
 from services import dashboard_service
 
-
 router = APIRouter(prefix="/dashboard", tags=["dashboard"])
 
 

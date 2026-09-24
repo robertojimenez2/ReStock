@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -29,8 +29,6 @@ from schemas.need import (
 )
 from services import _spec_validation
 
-
-
 _ALLOWED_TRANSITIONS: dict[NeedStatus, set[NeedStatus]] = {
     NeedStatus.ACTIVE: {
         NeedStatus.FULFILLED,
@@ -44,7 +42,7 @@ _ALLOWED_TRANSITIONS: dict[NeedStatus, set[NeedStatus]] = {
 
 
 def _utc_now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def _assert_owner_or_admin(need: Need, current_user: User) -> None:
@@ -207,11 +205,12 @@ def list_needs(
 
     if mine:
         company_id = current_user.company_id
-    else:
-        if current_user.role != UserRole.PLATFORM_ADMIN:
-            # El resto solo ve ACTIVE (candidatas a matching)
-            if status_filter is None:
-                status_filter = NeedStatus.ACTIVE
+    elif (
+        current_user.role != UserRole.PLATFORM_ADMIN
+        and status_filter is None
+    ):
+        # El resto solo ve ACTIVE (candidatas a matching)
+        status_filter = NeedStatus.ACTIVE
 
     return need_repository.list_needs(
         db,

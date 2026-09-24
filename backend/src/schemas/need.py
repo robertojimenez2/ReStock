@@ -1,8 +1,9 @@
 from datetime import datetime
 from decimal import Decimal
 
-from models.enums import NeedStatus
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+from models.enums import NeedStatus
 
 
 class NeedSpecificationInput(BaseModel):

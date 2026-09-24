@@ -1,7 +1,8 @@
 from datetime import datetime
 
-from models.enums import NotificationType
 from pydantic import BaseModel, ConfigDict
+
+from models.enums import NotificationType
 
 
 class NotificationResponse(BaseModel):

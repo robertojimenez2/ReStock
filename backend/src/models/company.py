@@ -1,16 +1,18 @@
-from datetime import datetime, timezone
-from db.base import Base
-from sqlalchemy import String, DateTime
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
+from sqlalchemy import DateTime, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from db.base import Base
+
 if TYPE_CHECKING:
-    from models.user import User
-    from models.surplus import Surplus
     from models.need import Need
+    from models.surplus import Surplus
+    from models.user import User
 
 def utc_now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 class Company(Base):
     __tablename__ = "companies"

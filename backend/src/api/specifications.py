@@ -22,7 +22,6 @@ from schemas.specification import (
 )
 from services import specification_service
 
-
 router = APIRouter(
     prefix="/materials/{material_id}/specifications",
     tags=["specifications"],

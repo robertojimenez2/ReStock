@@ -1,5 +1,5 @@
-from datetime import datetime, timedelta, timezone
 import uuid
+from datetime import UTC, datetime, timedelta
 
 import jwt
 from jwt.exceptions import InvalidTokenError
@@ -22,7 +22,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def create_access_token(user_id: int, role: str) -> str:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     payload = {
         "sub": str(user_id),

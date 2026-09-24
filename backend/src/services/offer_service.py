@@ -1,10 +1,10 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy.orm import Session
 
 from core.exceptions import (
-    OfferNotFoundError,
     OfferNotActionableError,
+    OfferNotFoundError,
     PermissionDeniedError,
     SurplusNotAvailableError,
     SurplusNotFoundError,
@@ -22,14 +22,13 @@ from models.user import User
 from repositories import (
     offer_repository,
     surplus_repository,
-    transaction_repository,
 )
 from schemas.offer import OfferCounter, OfferCreate
 from services import notification_service
 
 
 def _utc_now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def _load_surplus_or_404(db: Session, surplus_id: int) -> Surplus:

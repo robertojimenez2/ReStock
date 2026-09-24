@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 from core.exceptions import (
     MaterialNotEditableError,
     MaterialNotFoundError,
-    PermissionDeniedError,
     SpecificationAlreadyExistsError,
     SpecificationInUseError,
     SpecificationNotFoundError,
@@ -108,9 +107,13 @@ def update_specification(
             raise SpecificationAlreadyExistsError(data.name, material_id)
 
     # Cambio de data_type: prohibido si hay valores asociados
-    if data.data_type is not None and data.data_type != spec.data_type:
-        if specifications_repository.has_associated_values(db, spec.id):
-            raise SpecificationTypeChangeError(spec.id)
+    if (
+        data.data_type is not None
+        and data.data_type != spec.data_type
+        and specifications_repository.has_associated_values(db, spec.id)
+    ):
+        raise SpecificationTypeChangeError(spec.id)
+    
 
     return specifications_repository.update(
         db,
