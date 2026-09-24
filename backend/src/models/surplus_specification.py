@@ -17,13 +17,13 @@ class SurplusSpecification(Base):
     )
 
     surplus_id: Mapped[int] = mapped_column(
-        ForeignKey("surpluses.id"),
+        ForeignKey("surpluses.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
 
     specification_id: Mapped[int] = mapped_column(
-        ForeignKey("specifications.id"),
+        ForeignKey("specifications.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
