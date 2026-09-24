@@ -11,6 +11,7 @@ from models.material import Material
 from models.user import User
 from repositories import material_repository
 from schemas.material import MaterialCreate, MaterialUpdate
+from services import notification_service
 
 
 def _assert_can_edit(material: Material, current_user: User) -> None:
@@ -138,9 +139,11 @@ def approve_material(db: Session, material_id: int) -> Material:
     if material.status != MaterialStatus.PENDING:
         raise MaterialNotPendingError()
 
-    return material_repository.update(
+    material = material_repository.update(
         db, material, status=MaterialStatus.ACTIVE,
     )
+    notification_service.notify_material_approved(db, material)
+    return material
 
 
 def reject_material(db: Session, material_id: int) -> Material:
@@ -151,6 +154,8 @@ def reject_material(db: Session, material_id: int) -> Material:
     if material.status != MaterialStatus.PENDING:
         raise MaterialNotPendingError()
 
-    return material_repository.update(
+    material = material_repository.update(
         db, material, status=MaterialStatus.REJECTED,
     )
+    notification_service.notify_material_rejected(db, material)
+    return material

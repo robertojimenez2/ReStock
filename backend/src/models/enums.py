@@ -46,3 +46,14 @@ class TransactionStatus(str, Enum):
     IN_TRANSIT = "in_transit"
     COMPLETED = "completed"
     CANCELLED = "cancelled"
+
+
+class NotificationType(str, Enum):
+    OFFER_RECEIVED = "offer_received"
+    OFFER_ACCEPTED = "offer_accepted"
+    OFFER_REJECTED = "offer_rejected"
+    OFFER_COUNTERED = "offer_countered"
+    OFFER_CANCELLED = "offer_cancelled"
+    TRANSACTION_STATUS_CHANGED = "transaction_status_changed"
+    MATERIAL_APPROVED = "material_approved"
+    MATERIAL_REJECTED = "material_rejected"

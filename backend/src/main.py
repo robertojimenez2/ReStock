@@ -12,6 +12,7 @@ from api.offers import router as offers_router
 from api.transactions import router as transactions_router
 from api.dashboard import router as dashboard_router
 from api.valuation import router as valuation_router
+from api.notifications import router as notifications_router
 import db.metadata
 
 app = FastAPI(
@@ -30,6 +31,7 @@ app.include_router(offers_router)
 app.include_router(transactions_router)
 app.include_router(dashboard_router)
 app.include_router(valuation_router)
+app.include_router(notifications_router)
 
 @app.get("/")
 async def root():

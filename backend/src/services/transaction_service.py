@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 
 from sqlalchemy.orm import Session
 
+from backend.src.services import notification_service
 from core.exceptions import (
     InvalidTransactionTransitionError,
     PermissionDeniedError,
@@ -19,7 +20,7 @@ from repositories import (
     transaction_repository,
 )
 from schemas.transaction import TransactionStatusUpdate
-
+from services import notification_service
 
 _ALLOWED: dict[TransactionStatus, set[TransactionStatus]] = {
     TransactionStatus.PENDING: {
@@ -104,11 +105,12 @@ def change_status(
                 tx.status.value, target.value,
             )
 
+    old_status_value = tx.status.value
+
     tx.status = target
     if data.notes is not None:
         tx.notes = data.notes
 
-    # Efectos sobre el surplus
     if target == TransactionStatus.COMPLETED:
         tx.completed_at = _utc_now()
         surplus = surplus_repository.get_by_id(db, tx.surplus_id)
@@ -122,4 +124,14 @@ def change_status(
             surplus.status = SurplusStatus.AVAILABLE
             db.add(surplus)
 
-    return transaction_repository.save(db, tx)
+    tx = transaction_repository.save(db, tx)
+
+    notification_service.notify_transaction_status_changed(
+        db,
+        tx,
+        acting_company_id=current_user.company_id,
+        old_status=old_status_value,
+        new_status=target.value,
+    )
+
+    return tx

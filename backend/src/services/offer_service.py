@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 
 from sqlalchemy.orm import Session
 
+from backend.src.services import notification_service
 from core.exceptions import (
     OfferNotFoundError,
     OfferNotActionableError,
@@ -25,6 +26,7 @@ from repositories import (
     transaction_repository,
 )
 from schemas.offer import OfferCounter, OfferCreate
+from services import notification_service
 
 
 def _utc_now() -> datetime:
@@ -107,7 +109,10 @@ def create_offer(
         status=OfferStatus.PENDING,
     )
 
-    return offer_repository.create(db, offer)
+    offer_repository.create(db, offer)
+    offer = offer_repository.create(db, offer)
+    notification_service.notify_offer_received(db, offer)
+    return offer
 
 
 # ── Acciones sobre una oferta 
@@ -166,8 +171,13 @@ def accept_offer(
     db.commit()
     db.refresh(offer)
     db.refresh(transaction)
+    db.refresh(offer)
+    db.refresh(transaction)
+
+    notification_service.notify_offer_accepted(db, offer, transaction)
 
     return offer, transaction
+
 
 
 def reject_offer(
@@ -183,7 +193,10 @@ def reject_offer(
     _assert_pending(offer)
 
     offer.status = OfferStatus.REJECTED
-    return offer_repository.save(db, offer)
+
+    offer = offer_repository.save(db, offer)
+    notification_service.notify_offer_rejected(db, offer)
+    return offer
 
 
 def counter_offer(
@@ -225,6 +238,7 @@ def counter_offer(
     db.add(new_offer)
     db.commit()
     db.refresh(new_offer)
+    notification_service.notify_offer_countered(db, new_offer, offer)
     return new_offer
 
 
@@ -241,7 +255,9 @@ def cancel_offer(
     _assert_pending(offer)
 
     offer.status = OfferStatus.CANCELLED
-    return offer_repository.save(db, offer)
+    offer = offer_repository.save(db, offer)
+    notification_service.notify_offer_cancelled(db, offer)
+    return offer
 
 
 def list_offers(

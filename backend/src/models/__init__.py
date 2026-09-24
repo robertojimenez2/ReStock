@@ -8,6 +8,7 @@ from models.surplus_specification import SurplusSpecification
 from models.user import User
 from models.offer import Offer
 from models.transaction import Transaction
+from models.notification import Notification
 
 __all__ = [
     "Company",
@@ -19,5 +20,6 @@ __all__ = [
     "SurplusSpecification",
     "NeedSpecification",
     "Offer",
-    "Transaction"
+    "Transaction",
+    "Notification"
 ]
