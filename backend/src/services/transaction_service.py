@@ -2,7 +2,6 @@ from datetime import datetime, timezone
 
 from sqlalchemy.orm import Session
 
-from backend.src.services import notification_service
 from core.exceptions import (
     InvalidTransactionTransitionError,
     PermissionDeniedError,

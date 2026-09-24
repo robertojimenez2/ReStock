@@ -29,7 +29,7 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-pythonpath = ["src", "."]
+pythonpath = ["src"]
 testpaths = ["tests"]
 addopts = [
     "-ra",
@@ -40,3 +40,22 @@ markers = [
     "unit: unit tests (no DB)",
     "integration: integration tests (DB + API)",
 ]
+
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+omit = [
+    "src/__init__.py",
+    "src/*/__init__.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "def __repr__",
+]
+show_missing = true
