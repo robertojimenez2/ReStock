@@ -4,13 +4,65 @@ services:
     container_name: restock-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: restock
-      POSTGRES_USER: restock
-      POSTGRES_PASSWORD: restock_dev
+      POSTGRES_USER: ${POSTGRES_USER:-restock}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-restock_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-restock}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-restock}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - restock
+
+  migrate:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: restock-migrate
+    command: alembic upgrade head
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-restock}:${POSTGRES_PASSWORD:-restock_dev}@postgres:5432/${POSTGRES_DB:-restock}
+      SECRET_KEY: ${SECRET_KEY:-dev-secret-change-me}
+      ALGORITHM: ${ALGORITHM:-HS256}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-30}
+      DATABASE_ECHO: ${DATABASE_ECHO:-false}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - restock
+    restart: "no"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: restock-backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-restock}:${POSTGRES_PASSWORD:-restock_dev}@postgres:5432/${POSTGRES_DB:-restock}
+      SECRET_KEY: ${SECRET_KEY:-dev-secret-change-me}
+      ALGORITHM: ${ALGORITHM:-HS256}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-30}
+      DATABASE_ECHO: ${DATABASE_ECHO:-false}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    networks:
+      - restock
 
 volumes:
   postgres_data:
+
+networks:
+  restock:
+    driver: bridge
