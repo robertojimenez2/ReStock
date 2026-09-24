@@ -6,7 +6,6 @@ import type {
 } from "../types";
 
 export interface ListSurplusesParams {
-  [key: string]: string | number | boolean | null | undefined;
   mine?: boolean;
   status?: SurplusStatus;
   material_id?: number;
@@ -26,7 +25,7 @@ export interface UpdateSurplusPayload {
 
 export const surplusesApi = {
   list(params: ListSurplusesParams = {}): Promise<Surplus[]> {
-    return apiClient.get<Surplus[]>("/surpluses", { params });
+    return apiClient.get<Surplus[]>("/surpluses", { params: { ...params } });
   },
 
   get(id: number): Promise<Surplus> {
