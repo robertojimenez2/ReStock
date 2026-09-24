@@ -88,4 +88,5 @@ class Surplus(Base):
         "SurplusSpecification",
         back_populates="surplus",
         cascade="all, delete-orphan",
-    )
+        passive_deletes=True,
+    )   

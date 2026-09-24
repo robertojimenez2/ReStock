@@ -2,7 +2,6 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from api.deps import get_current_active_user
@@ -37,12 +36,6 @@ def register(
             status_code=status.HTTP_409_CONFLICT,
             detail=str(error),
         ) from error
-    except IntegrityError as error:
-        db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="El correo ya está registrado",
-        ) from error
 
     return user
 
@@ -67,10 +60,7 @@ def login(
 
     access_token = create_user_token(user)
 
-    return Token(
-        access_token=access_token,
-        token_type="bearer",
-    )
+    return Token(access_token=access_token, token_type="bearer")
 
 
 @router.get("/me", response_model=UserResponse)

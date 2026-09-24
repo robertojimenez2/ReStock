@@ -32,7 +32,7 @@ class Company(Base):
         nullable=False
     )
 
-    description: Mapped[str] = mapped_column(
+    description: Mapped[str | None] = mapped_column(
         String(250),
         nullable=True
     )

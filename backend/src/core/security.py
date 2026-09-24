@@ -17,8 +17,6 @@ def hash_password(password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     try:
         return password_hash.verify(plain_password, hashed_password)
-    except InvalidTokenError:
-        return False
     except Exception:
         return False
 
