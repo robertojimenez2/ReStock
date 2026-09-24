@@ -3,6 +3,7 @@ from sqlalchemy import text
 
 from db.session import engine
 from api.auth import router as auth_router
+from api.materials import router as materials_router
 import db.metadata
 
 app = FastAPI(
@@ -12,6 +13,7 @@ app = FastAPI(
 )
 
 app.include_router(auth_router)
+app.include_router(materials_router)
 
 @app.get("/")
 async def root():

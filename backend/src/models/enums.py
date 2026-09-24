@@ -24,3 +24,9 @@ class NeedStatus(str, Enum):
     ACTIVE = "active"
     FULFILLED = "fulfilled"
     INACTIVE = "inactive"
+
+
+class MaterialStatus(str, Enum):
+    ACTIVE = "active"
+    PENDING = "pending"
+    REJECTED = "rejected"

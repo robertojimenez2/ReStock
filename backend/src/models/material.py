@@ -1,18 +1,20 @@
 from datetime import datetime, timezone
+from typing import TYPE_CHECKING
 
 from db.base import Base
-from sqlalchemy import DateTime, String
+from models.enums import MaterialStatus
+from sqlalchemy import DateTime, ForeignKey, String
+from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from models.surplus import Surplus
     from models.need import Need
     from models.specification import Specification
 
+
 def utc_now() -> datetime:
     return datetime.now(timezone.utc)
-
 
 
 class Material(Base):
@@ -38,9 +40,32 @@ class Material(Base):
         nullable=True,
     )
 
+    status: Mapped[MaterialStatus] = mapped_column(
+        SQLEnum(
+            MaterialStatus,
+            native_enum=False,
+            length=20,
+        ),
+        default=MaterialStatus.ACTIVE,
+        nullable=False,
+        index=True,
+    )
+
+    proposed_by_company_id: Mapped[int | None] = mapped_column(
+        ForeignKey("companies.id"),
+        nullable=True,
+        index=True,
+    )
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=utc_now,
+    )
+
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=utc_now,
+        onupdate=utc_now,
     )
 
     surpluses: Mapped[list["Surplus"]] = relationship(
