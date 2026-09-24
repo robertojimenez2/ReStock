@@ -150,3 +150,9 @@ class InvalidTransactionTransitionError(AppError):
         super().__init__(
             f"No se puede pasar de '{current}' a '{target}'"
         )
+
+
+class CompanyNotFoundError(AppError):
+    def __init__(self, company_id: int | None = None) -> None:
+        self.company_id = company_id
+        super().__init__("Empresa no encontrada")

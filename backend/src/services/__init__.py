@@ -7,3 +7,5 @@ from services import matching_service
 from services import offer_service
 from services import transaction_service
 from services import dashboard_service
+from services import logistics_service
+from services import valuation_service
