@@ -1,61 +1,72 @@
 # ReStockMX
 
-> **Inteligencia para convertir excedentes industriales en valor.**
+> **Intelligence to turn industrial surplus into value.**
 
-ReStockMX es una plataforma B2B de **valorización y comercialización inteligente de excedentes industriales**. No busca ser un simple marketplace de sobrantes: combina información técnica, económica y geográfica para ayudar a las empresas a descubrir qué hacer con un excedente, quién podría utilizarlo y qué alternativa puede generar mayor valor.
+**Recruiter snapshot:** ReStockMX is a full-stack B2B platform for the intelligent valorization and commercialization of industrial surplus. It demonstrates end-to-end product engineering: modern frontend development, a layered FastAPI backend, PostgreSQL data modeling, explainable matching logic, secure authentication, Dockerized environments, and CI-ready workflows. The architecture is a **modular monolith**—professional domain separation without the operational overhead of microservices.
 
-**Mercado inicial:** Guadalajara / El Salto, Jalisco — con foco inicial en la industria de plásticos.
+**Initial market:** Guadalajara / El Salto, Jalisco — initially focused on the plastics industry.
 
-## ¿Qué hace diferente a ReStockMX?
+## Engineering highlights
+
+- Full-stack delivery with Next.js, React, TypeScript, FastAPI, SQLAlchemy, and PostgreSQL.
+- Clean backend layering: API → Services → Repositories → Models.
+- Explainable matching engine with weighted, transparent scoring.
+- Business logic for valuation, logistics cost, offers, counteroffers, transactions, and notifications.
+- Security with JWT, httpOnly cookies, and Argon2.
+- Docker Compose for reproducible local development and GitHub Actions for CI.
+
+## What makes ReStockMX different?
+
+ReStockMX is not just a marketplace for leftovers. It combines technical, economic, and geographic information to help companies discover what to do with a surplus, who could use it, and which alternative can create the most value.
 
 ```text
-Excedente industrial
+Industrial surplus
         +
-Información técnica
+Technical information
         +
-Compatibilidad
+Compatibility
         +
-Ubicación
+Location
         +
-Logística
+Logistics
         +
-Valorización
+Valorization
         ↓
-Recomendación de alternativas
+Recommendation of alternatives
         ↓
-Oferta → Negociación → Transacción
+Offer → Negotiation → Transaction
 ```
 
-La plataforma permite:
+The platform enables users to:
 
-- Catalogar materiales y especificaciones técnicas.
-- Publicar excedentes industriales.
-- Registrar necesidades de compra.
-- Encontrar empresas técnicamente compatibles.
-- Explicar por qué una oportunidad es compatible.
-- Estimar logística y valor neto.
-- Negociar mediante ofertas y contraofertas.
-- Dar seguimiento a transacciones y notificaciones.
-- Consultar indicadores operativos desde un dashboard.
+- Catalog materials and technical specifications.
+- Publish industrial surpluses.
+- Register purchasing needs.
+- Find technically compatible companies.
+- Explain why an opportunity is compatible.
+- Estimate logistics and net value.
+- Negotiate through offers and counteroffers.
+- Track transactions and notifications.
+- Review operational metrics from a dashboard.
 
-La idea central es transformar **“tengo material sobrante”** en **“sé qué tengo, quién puede utilizarlo, cuánto puede valer y qué alternativa me conviene analizar”**.
+The core idea is to transform **“I have leftover material”** into **“I know what I have, who can use it, how much it may be worth, and which alternative is worth analyzing.”**
 
-## Arquitectura general
+## General architecture
 
-ReStockMX utiliza un **monolito modular** con frontend y backend separados:
+ReStockMX uses a **modular monolith** with separate frontend and backend layers:
 
 ```text
 ┌─────────────────────────────────────────┐
 │ Frontend                                │
 │ Next.js · React · TypeScript            │
-│ Dashboard · Marketplace · Operaciones   │
+│ Dashboard · Marketplace · Operations    │
 └──────────────────┬──────────────────────┘
                    │ REST / HTTP
                    ▼
 ┌─────────────────────────────────────────┐
 │ Backend                                 │
 │ FastAPI · Python                        │
-│ API → Services → Repositories → Models │
+│ API → Services → Repositories → Models  │
 └──────────────────┬──────────────────────┘
                    │ SQLAlchemy
                    ▼
@@ -64,24 +75,24 @@ ReStockMX utiliza un **monolito modular** con frontend y backend separados:
 └─────────────────────────────────────────┘
 ```
 
-La separación modular permite mantener una arquitectura profesional sin introducir la complejidad operativa de microservicios.
+This modular separation maintains a professional architecture without introducing the operational complexity of microservices.
 
 ## Stack
 
-| Capa | Tecnología |
+| Layer | Technology |
 |---|---|
 | Frontend | Next.js 16 · React 19 · TypeScript |
 | UI | Tailwind CSS v4 |
 | Backend | Python 3.13 · FastAPI |
 | ORM | SQLAlchemy 2.x |
-| Migraciones | Alembic |
-| Base de datos | PostgreSQL 17 |
-| Validación | Pydantic |
-| Seguridad | JWT · cookies httpOnly · Argon2 |
-| Infraestructura | Docker · Docker Compose |
+| Migrations | Alembic |
+| Database | PostgreSQL 17 |
+| Validation | Pydantic |
+| Security | JWT · httpOnly cookies · Argon2 |
+| Infrastructure | Docker · Docker Compose |
 | CI | GitHub Actions |
 
-## Dominios del producto
+## Product domains
 
 ```text
 Auth
@@ -98,36 +109,36 @@ Notifications
 Dashboard
 ```
 
-El modelo de negocio conecta materiales con especificaciones, excedentes y necesidades; posteriormente una coincidencia puede evolucionar hacia una oferta y una transacción.
+The business model connects materials with specifications, surpluses, and needs; a match can then evolve into an offer and a transaction.
 
-## Motor de matching
+## Matching engine
 
-El matching inicial es determinista y explicable:
+The initial matching logic is deterministic and explainable:
 
 ```text
 Material          40%
-Cantidad          20%
-Ubicación         20%
-Precio            10%
-Especificaciones  10%
+Quantity          20%
+Location          20%
+Price             10%
+Specifications    10%
 ```
 
-Cada resultado puede mostrar un desglose de puntuación, de modo que la plataforma no solamente diga **“hay compatibilidad”**, sino que pueda explicar sus componentes.
+Each result can display a score breakdown, so the platform does not simply say **“there is compatibility”**—it can explain the components behind that compatibility.
 
-## Valorización y logística
+## Valuation and logistics
 
-La plataforma estima:
+The platform estimates:
 
 ```text
-valor bruto = cantidad × precio unitario
+gross value = quantity × unit price
 
-valor neto estimado
-    = valor bruto − costo logístico
+estimated net value
+    = gross value − logistics cost
 ```
 
-Esto permite analizar una oportunidad considerando no solo el precio publicado, sino también el costo estimado de llevar el material hasta el comprador.
+This allows an opportunity to be analyzed not only by its published price, but also by the estimated cost of moving the material to the buyer.
 
-## Estructura del repositorio
+## Repository structure
 
 ```text
 restock/
@@ -154,9 +165,9 @@ restock/
 └── README.md
 ```
 
-## Ejecutar el proyecto
+## Running the project
 
-Requisitos:
+Requirements:
 
 - Docker
 - Docker Compose
@@ -168,36 +179,36 @@ cp .env.example .env
 docker compose up --build
 ```
 
-Servicios:
+Services:
 
-| Servicio | URL |
+| Service | URL |
 |---|---|
 | Frontend | http://localhost:3000 |
 | Backend | http://localhost:8000 |
 | Swagger | http://localhost:8000/docs |
 | PostgreSQL | localhost:5432 |
 
-Para detener:
+To stop:
 
 ```bash
 docker compose down
 ```
 
-Para eliminar también los datos de PostgreSQL:
+To also delete PostgreSQL data:
 
 ```bash
 docker compose down -v
 ```
 
-## Filosofía
+## Philosophy
 
-> **El excedente no necesariamente es desperdicio; puede ser un activo para otra empresa.**
+> **Surplus is not necessarily waste; it can be an asset for another company.**
 
-ReStockMX busca convertir información industrial dispersa en decisiones operativas más claras, haciendo que la plataforma sea una herramienta de **inteligencia, valorización y comercialización industrial**, no solamente un catálogo de materiales.
+ReStockMX aims to turn scattered industrial information into clearer operational decisions, making the platform a tool for **industrial intelligence, valorization, and commercialization**—not just a materials catalog.
 
 ---
 
-## Documentación
+## Documentation
 
 - [Backend](backend/README.md)
 - [Frontend](frontend/README.md)
