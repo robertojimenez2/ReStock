@@ -22,6 +22,9 @@ class ValuationResult:
     surplus_id: int
     seller_company_id: int
     buyer_company_id: int
+    buyer_company_name: str          
+    buyer_company_city: str          
+    buyer_company_state: str
     quantity: Decimal
     unit_price: Decimal
     gross_value: Decimal
@@ -34,11 +37,7 @@ class ValuationResult:
     notes: list[str] = field(default_factory=list)
 
 
-def _compute(
-    db: Session,
-    surplus,
-    buyer_company_id: int,
-) -> ValuationResult:
+def _compute(db: Session, surplus, buyer_company_id: int) -> ValuationResult:
     buyer = db.get(Company, buyer_company_id)
     if buyer is None:
         raise CompanyNotFoundError(buyer_company_id)
@@ -56,6 +55,9 @@ def _compute(
         surplus_id=surplus.id,
         seller_company_id=surplus.company_id,
         buyer_company_id=buyer_company_id,
+        buyer_company_name=buyer.name,
+        buyer_company_city=buyer.city,
+        buyer_company_state=buyer.state,
         quantity=qty,
         unit_price=price,
         gross_value=gross,

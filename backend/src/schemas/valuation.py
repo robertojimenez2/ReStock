@@ -7,6 +7,9 @@ class ValuationResponse(BaseModel):
     surplus_id: int
     seller_company_id: int
     buyer_company_id: int
+    buyer_company_name: str
+    buyer_company_city: str
+    buyer_company_state: str
     quantity: Decimal
     unit_price: Decimal
     gross_value: Decimal
