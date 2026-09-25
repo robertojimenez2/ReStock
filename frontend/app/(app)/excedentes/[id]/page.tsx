@@ -27,6 +27,7 @@ import {
   type SurplusStatus,
 } from "@/lib/api";
 import { formatCurrency, formatQuantity, formatRelativeTime } from "@/lib/format";
+import { MatchesSection } from "@/components/matching/matches-section";
 
 export default function MySurplusDetailPage() {
   const params = useParams<{ id: string }>();
@@ -222,6 +223,7 @@ export default function MySurplusDetailPage() {
           </Card>
         </div>
       </div>
+      <MatchesSection resourceId={surplus.id} direction="surplus" limit={6} />
     </div>
   );
 }

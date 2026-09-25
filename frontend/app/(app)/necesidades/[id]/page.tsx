@@ -27,6 +27,7 @@ import {
   type Specification,
 } from "@/lib/api";
 import { formatCurrency, formatQuantity, formatRelativeTime } from "@/lib/format";
+import { MatchesSection } from "@/components/matching/matches-section";
 
 export default function NeedDetailPage() {
   const params = useParams<{ id: string }>();
@@ -206,6 +207,7 @@ export default function NeedDetailPage() {
           </Card>
         </div>
       </div>
+      <MatchesSection resourceId={need.id} direction="need" limit={6} />
     </div>
   );
 }

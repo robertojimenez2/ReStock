@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
+import { MatchesSection } from "@/components/matching/matches-section";
+import { OfferForm } from "@/components/offer/offer-form";
 import { SpecList } from "@/components/surplus/spec-list";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,28 +15,29 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Dialog } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatusBadge } from "@/components/ui/status-badge";
 import {
   ApiError,
   materialsApi,
+  specificationsApi,
   surplusesApi,
   type Material,
   type Specification,
   type Surplus,
 } from "@/lib/api";
+import { useAuth } from "@/lib/auth/use-auth";
 import {
   formatCurrency,
   formatQuantity,
   formatRelativeTime,
 } from "@/lib/format";
-import { Dialog } from "@/components/ui/dialog";
-import { OfferForm } from "@/components/offer/offer-form";
-
 
 export default function SurplusDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
+  const { user } = useAuth();
   const surplusId = Number(params.id);
 
   const [surplus, setSurplus] = useState<Surplus | null>(null);
@@ -48,15 +51,17 @@ export default function SurplusDetailPage() {
     setIsLoading(true);
     setError(null);
     try {
-      // Estas 3 peticiones son independientes — las disparamos en paralelo
-      // una vez que tengamos el surplus (porque necesitamos su material_id).
       const s = await surplusesApi.get(surplusId);
       setSurplus(s);
 
-      const mat = await materialsApi.get(s.material_id);
+      // Material + specs en paralelo, una vez tenemos material_id
+      const [mat, specs] = await Promise.all([
+        materialsApi.get(s.material_id),
+        specificationsApi.listByMaterial(s.material_id),
+      ]);
 
       setMaterial(mat);
-      setSpecifications([]);
+      setSpecifications(specs);
     } catch (err) {
       if (err instanceof ApiError) setError(err.detail);
       else setError("No se pudo cargar el excedente");
@@ -96,6 +101,9 @@ export default function SurplusDetailPage() {
       </div>
     );
   }
+
+  // A partir de aquí, surplus NO es null
+  const isOwn = user?.company_id === surplus.company_id;
 
   return (
     <div className="space-y-6">
@@ -196,11 +204,15 @@ export default function SurplusDetailPage() {
 
               <div className="border-t border-neutral-100 pt-4 dark:border-neutral-800">
                 <Button
-                    className="w-full"
-                    onClick={() => setOfferDialogOpen(true)}
-                    disabled={surplus.status !== "available"}
-                    >
-                    {surplus.status === "available" ? "Hacer oferta" : "No disponible"}
+                  className="w-full"
+                  onClick={() => setOfferDialogOpen(true)}
+                  disabled={surplus.status !== "available" || isOwn}
+                >
+                  {isOwn
+                    ? "Es tu excedente"
+                    : surplus.status === "available"
+                      ? "Hacer oferta"
+                      : "No disponible"}
                 </Button>
               </div>
 
@@ -222,21 +234,28 @@ export default function SurplusDetailPage() {
           </Card>
         </div>
       </div>
-    <Dialog
+
+      {/* Matches: solo el dueño ve con quién empareja */}
+      {isOwn && (
+        <MatchesSection resourceId={surplus.id} direction="surplus" limit={6} />
+      )}
+
+      {/* Dialog de oferta */}
+      <Dialog
         open={offerDialogOpen}
         onClose={() => setOfferDialogOpen(false)}
         title="Hacer oferta"
         description="Propón cantidad y precio al vendedor."
-        >
+      >
         <OfferForm
-            surplus={surplus}
-            onSuccess={(offer) => {
+          surplus={surplus}
+          onSuccess={(offer) => {
             setOfferDialogOpen(false);
             router.push(`/ofertas/${offer.id}`);
-            }}
-            onCancel={() => setOfferDialogOpen(false)}
+          }}
+          onCancel={() => setOfferDialogOpen(false)}
         />
-    </Dialog>
+      </Dialog>
     </div>
   );
 }
