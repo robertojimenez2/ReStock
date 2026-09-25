@@ -1,13 +1,13 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from api.deps import get_current_active_user
 from core.config import settings
-from core.rate_limit import limiter
 from core.exceptions import EmailAlreadyRegisteredError
+from core.rate_limit import limiter
 from db.dependencies import get_db
 from models.user import User
 from schemas.auth import RegisterRequest, Token
