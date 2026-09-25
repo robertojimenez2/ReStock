@@ -28,6 +28,7 @@ import {
 } from "@/lib/api";
 import { formatCurrency, formatQuantity, formatRelativeTime } from "@/lib/format";
 import { MatchesSection } from "@/components/matching/matches-section";
+import { ValuationSection } from "@/components/valuation/valuation-section";
 
 export default function MySurplusDetailPage() {
   const params = useParams<{ id: string }>();
@@ -224,6 +225,7 @@ export default function MySurplusDetailPage() {
         </div>
       </div>
       <MatchesSection resourceId={surplus.id} direction="surplus" limit={6} />
+      <ValuationSection surplusId={surplus.id} limit={20} />
     </div>
   );
 }

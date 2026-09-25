@@ -326,3 +326,22 @@ export interface OfferCounterPayload {
   unit_price: string;
   message?: string | null;
 }
+
+export interface Valuation {
+  surplus_id: number;
+  seller_company_id: number;
+  buyer_company_id: number;
+  buyer_company_name: string;
+  buyer_company_city: string;
+  buyer_company_state: string;
+  quantity: string;
+  unit_price: string;
+  gross_value: string;
+  logistics_cost: string;
+  net_value: string;
+  distance_km: number;
+  distance_source: string;
+  material_multiplier: number;
+  estimated_delivery_days: number;
+  notes: string[];
+}

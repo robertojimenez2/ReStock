@@ -33,6 +33,8 @@ import {
   formatQuantity,
   formatRelativeTime,
 } from "@/lib/format";
+import { ValuationSection } from "@/components/valuation/valuation-section";
+import { ValuationQuickView } from "@/components/valuation/valuation-quick-view";
 
 export default function SurplusDetailPage() {
   const params = useParams<{ id: string }>();
@@ -221,6 +223,7 @@ export default function SurplusDetailPage() {
               </p>
             </CardContent>
           </Card>
+          {!isOwn && <ValuationQuickView surplusId={surplus.id} />}
 
           <Card>
             <CardContent className="pt-6">
@@ -237,7 +240,10 @@ export default function SurplusDetailPage() {
 
       {/* Matches: solo el dueño ve con quién empareja */}
       {isOwn && (
-        <MatchesSection resourceId={surplus.id} direction="surplus" limit={6} />
+        <>
+          <MatchesSection resourceId={surplus.id} direction="surplus" limit={6} />
+          <ValuationSection surplusId={surplus.id} limit={20} />
+        </>
       )}
 
       {/* Dialog de oferta */}

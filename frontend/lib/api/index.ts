@@ -38,3 +38,5 @@ export type { ListTransactionsParams } from "./endpoints/transactions";
 export { notificationsApi } from "./endpoints/notifications"
 export { matchesApi } from "./endpoints/matches";
 export type { MatchesParams } from "./endpoints/matches";
+export { valuationApi } from "./endpoints/valuation";
+export type { ValuationParams } from "./endpoints/valuation";
