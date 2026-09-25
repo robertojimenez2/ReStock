@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
 from api.auth import router as auth_router
+from api.companies import router as companies_router
 from api.dashboard import router as dashboard_router
 from api.matches import router as matches_router
 from api.materials import router as materials_router
@@ -39,6 +40,7 @@ app.include_router(matches_router)
 app.include_router(offers_router)
 app.include_router(transactions_router)
 app.include_router(dashboard_router)
+app.include_router(companies_router)
 app.include_router(valuation_router)
 app.include_router(notifications_router)
 
