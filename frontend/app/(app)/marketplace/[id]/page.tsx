@@ -2,7 +2,7 @@
 
 import { ArrowLeft, MapPin, Package } from "lucide-react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import { SpecList } from "@/components/surplus/spec-list";
@@ -28,9 +28,13 @@ import {
   formatQuantity,
   formatRelativeTime,
 } from "@/lib/format";
+import { Dialog } from "@/components/ui/dialog";
+import { OfferForm } from "@/components/offer/offer-form";
+
 
 export default function SurplusDetailPage() {
   const params = useParams<{ id: string }>();
+  const router = useRouter();
   const surplusId = Number(params.id);
 
   const [surplus, setSurplus] = useState<Surplus | null>(null);
@@ -38,6 +42,7 @@ export default function SurplusDetailPage() {
   const [specifications, setSpecifications] = useState<Specification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [offerDialogOpen, setOfferDialogOpen] = useState(false);
 
   const load = useCallback(async () => {
     setIsLoading(true);
@@ -190,7 +195,13 @@ export default function SurplusDetailPage() {
               </div>
 
               <div className="border-t border-neutral-100 pt-4 dark:border-neutral-800">
-                <Button className="w-full">Hacer oferta</Button>
+                <Button
+                    className="w-full"
+                    onClick={() => setOfferDialogOpen(true)}
+                    disabled={surplus.status !== "available"}
+                    >
+                    {surplus.status === "available" ? "Hacer oferta" : "No disponible"}
+                </Button>
               </div>
 
               <p className="text-center text-xs text-neutral-400">
@@ -211,6 +222,21 @@ export default function SurplusDetailPage() {
           </Card>
         </div>
       </div>
+    <Dialog
+        open={offerDialogOpen}
+        onClose={() => setOfferDialogOpen(false)}
+        title="Hacer oferta"
+        description="Propón cantidad y precio al vendedor."
+        >
+        <OfferForm
+            surplus={surplus}
+            onSuccess={(offer) => {
+            setOfferDialogOpen(false);
+            router.push(`/ofertas/${offer.id}`);
+            }}
+            onCancel={() => setOfferDialogOpen(false)}
+        />
+    </Dialog>
     </div>
   );
 }
