@@ -163,8 +163,3 @@ class NotificationNotFoundError(AppError):
         self.notification_id = notification_id
         super().__init__("Notificación no encontrada")
 
-
-class CompanyNotFoundError(AppError):
-    def __init__(self, company_id: int | None = None) -> None:
-        self.company_id = company_id
-        super().__init__("Empresa no encontrada")

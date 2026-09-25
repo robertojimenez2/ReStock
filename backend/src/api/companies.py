@@ -10,7 +10,6 @@ from models.user import User
 from schemas.company import CompanyResponse, CompanyUpdate
 from services import company_service
 
-
 router = APIRouter(prefix="/companies", tags=["companies"])
 
 
