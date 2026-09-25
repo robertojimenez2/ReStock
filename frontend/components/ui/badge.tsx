@@ -33,8 +33,9 @@ const badgeVariants = cva(
   }
 );
 
+// Omit "color" del tipo HTML para evitar el conflicto con VariantProps
 export interface BadgeProps
-  extends React.HTMLAttributes<HTMLSpanElement>,
+  extends Omit<React.HTMLAttributes<HTMLSpanElement>, "color">,
     VariantProps<typeof badgeVariants> {
   icon?: React.ComponentType<{ className?: string }>;
 }
