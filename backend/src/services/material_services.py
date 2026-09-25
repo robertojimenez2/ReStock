@@ -65,16 +65,19 @@ def list_materials(
     skip: int = 0,
     limit: int = 100,
 ) -> list[Material]:
-    # platform_admin ve todo; el resto solo ACTIVE
-    status_filter = (
-        None
-        if current_user.role == UserRole.PLATFORM_ADMIN
-        else MaterialStatus.ACTIVE
-    )
+    if current_user.role == UserRole.PLATFORM_ADMIN:
+        # platform_admin ve todo (ACTIVE, PENDING, REJECTED)
+        return material_repository.list_materials(
+            db,
+            category=category,
+            skip=skip,
+            limit=limit,
+        )
 
-    return material_repository.list_materials(
+    # Resto: ACTIVE + propias (cualquier estado)
+    return material_repository.list_materials_for_company(
         db,
-        status=status_filter,
+        company_id=current_user.company_id,
         category=category,
         skip=skip,
         limit=limit,

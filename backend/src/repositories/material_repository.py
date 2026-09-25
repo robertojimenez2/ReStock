@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from models.enums import MaterialStatus
@@ -69,3 +69,30 @@ def update(db: Session, material: Material, **fields) -> Material:
 def delete(db: Session, material: Material) -> None:
     db.delete(material)
     db.commit()
+
+
+def list_materials_for_company(
+    db: Session,
+    *,
+    company_id: int,
+    category: str | None = None,
+    skip: int = 0,
+    limit: int = 100,
+) -> list[Material]:
+    """Materiales visibles para una empresa:
+    - ACTIVE del catálogo (compartidos)
+    - propuestas propias en cualquier estado (PENDING, REJECTED)
+    """
+    stmt = select(Material).where(
+        or_(
+            Material.status == MaterialStatus.ACTIVE,
+            Material.proposed_by_company_id == company_id,
+        )
+    )
+
+    if category is not None:
+        stmt = stmt.where(Material.category == category)
+
+    stmt = stmt.order_by(Material.name).offset(skip).limit(limit)
+
+    return list(db.scalars(stmt).all())
