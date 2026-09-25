@@ -24,6 +24,12 @@ class User(Base):
         nullable=False,
     )
 
+    email_verified_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+        default=None,
+    )
+
     password_hash: Mapped[str] = mapped_column(
         String(255),
         nullable=False,

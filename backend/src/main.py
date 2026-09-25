@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from slowapi.errors import RateLimitExceeded
 from sqlalchemy import text
 
 from api.auth import router as auth_router
@@ -15,6 +17,7 @@ from api.surpluses import router as surpluses_router
 from api.transactions import router as transactions_router
 from api.valuation import router as valuation_router
 from core.config import settings
+from core.rate_limit import limiter
 from db.session import engine
 
 app = FastAPI(
@@ -22,6 +25,15 @@ app = FastAPI(
     description="API para la plataforma de valorización y comercialización de excedentes industriales.",
     version="0.1.0",
 )
+
+app.state.limiter = limiter
+
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_exceeded_handler(request, exc):
+    return JSONResponse(
+        status_code=429,
+        content={"detail": "Demasiados intentos. Intenta de nuevo en un momento."},
+    )
 
 app.add_middleware(
     CORSMiddleware,

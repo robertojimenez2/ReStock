@@ -1,11 +1,12 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from api.deps import get_current_active_user
 from core.config import settings
+from core.rate_limit import limiter
 from core.exceptions import EmailAlreadyRegisteredError
 from db.dependencies import get_db
 from models.user import User
@@ -25,7 +26,9 @@ router = APIRouter(prefix="/auth", tags=["auth"])
     response_model=UserResponse,
     status_code=status.HTTP_201_CREATED,
 )
+@limiter.limit(settings.rate_limit_register)
 def register(
+    request: Request,
     data: RegisterRequest,
     db: Annotated[Session, Depends(get_db)],
 ) -> User:
@@ -54,7 +57,9 @@ def _set_session_cookie(response: Response, token: str) -> None:
 
 
 @router.post("/login", response_model=Token)
+@limiter.limit(settings.rate_limit_login)
 def login(
+    request: Request,
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     response: Response,
     db: Annotated[Session, Depends(get_db)],

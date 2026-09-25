@@ -21,6 +21,12 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
+if not target_metadata.tables:
+    raise RuntimeError(
+        "Base.metadata está vacío. Los modelos no se cargaron correctamente. "
+        "Revisa los imports en db/metadata.py. Un autogenerate con metadata "
+        "vacío genera una migración que BORRA todas las tablas."
+    )
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

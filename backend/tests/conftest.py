@@ -6,12 +6,16 @@ apunte a la BD de test.
 
 import os
 
-# 1. Forzar la BD de test ANTES de cualquier import de la app.
 os.environ["DATABASE_URL"] = os.environ.get(
     "TEST_DATABASE_URL",
     "postgresql+psycopg://restock:restock_dev@localhost:5432/restock_test",
 )
 os.environ["DATABASE_ECHO"] = "false"
+
+# Rate limiting desactivado en tests
+os.environ["RATE_LIMIT_LOGIN"] = "1000000/minute"
+os.environ["RATE_LIMIT_REGISTER"] = "1000000/minute"
+os.environ["RATE_LIMIT_RESEND"] = "1000000/minute"
 
 # 2. Imports de terceros
 import pytest
@@ -151,3 +155,19 @@ def make_client_for_user(client, register_and_login):
         return headers
 
     return _make    
+
+
+@pytest.fixture(autouse=True)
+def reset_rate_limiter():
+    """Limpia el storage del rate limiter entre tests."""
+    from core.rate_limit import limiter
+
+    try:
+        limiter.reset()
+    except Exception:
+        pass
+    yield
+    try:
+        limiter.reset()
+    except Exception:
+        pass
