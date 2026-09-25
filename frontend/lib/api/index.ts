@@ -40,3 +40,5 @@ export { matchesApi } from "./endpoints/matches";
 export type { MatchesParams } from "./endpoints/matches";
 export { valuationApi } from "./endpoints/valuation";
 export type { ValuationParams } from "./endpoints/valuation";
+export { companiesApi } from "./endpoints/companies";
+export type { CompanyUpdatePayload } from "./endpoints/companies";
