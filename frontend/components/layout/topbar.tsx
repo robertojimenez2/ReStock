@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useAuth } from "@/lib/auth/use-auth";
 import { cn } from "@/lib/utils";
+import { NotificationBell } from "@/components/notification/notification-bell";
 
 export function Topbar() {
   const { user, logout } = useAuth();
@@ -40,17 +41,7 @@ export function Topbar() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
 
-          <Link
-            href="/notificaciones"
-            aria-label="Notificaciones"
-            className={cn(
-              "inline-flex h-9 w-9 items-center justify-center rounded-md",
-              "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900",
-              "dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
-            )}
-          >
-            <Bell className="h-4 w-4" />
-          </Link>
+          <NotificationBell />
 
           <div className="relative">
             <button
